@@ -16,13 +16,13 @@ class ClojureAssetPostprocessor : AssetPostprocessor {
     static public string pathToAssemblies = "Assets/Arcadia/Compiled";
 
     static public void SetupLoadPath() {
-        string loadPath = Path.Combine(System.Environment.CurrentDirectory, pathToAssemblies);
+        string loadPath = Path.GetFullPath(Path.Combine(System.Environment.CurrentDirectory, pathToAssemblies));
         foreach(string path in CompilationRoots) {
-            loadPath += ":" + path;
+            loadPath += Path.PathSeparator + Path.GetFullPath(Path.Combine(System.Environment.CurrentDirectory, path));
         }
 
         System.Environment.SetEnvironmentVariable("CLOJURE_LOAD_PATH", loadPath);
-        Debug.Log(System.Environment.GetEnvironmentVariable("CLOJURE_LOAD_PATH"));
+        Debug.Log("CLOJURE_LOAD_PATH = " + System.Environment.GetEnvironmentVariable("CLOJURE_LOAD_PATH"));
     }
 
     static public void OnPostprocessAllAssets(
@@ -45,7 +45,7 @@ class ClojureAssetPostprocessor : AssetPostprocessor {
     
     // only consider imported assets
     foreach(string path in importedAssets) {
-        Debug.Log(path);
+        Debug.Log("PATH = " + path);
 
       // compile only if asset is a .clj file and on a compilation root
       if(path.EndsWith(".clj") && CompilationRoots.Any(r => path.Contains(r))) {
